@@ -8,6 +8,6 @@ module.exports = {
 		path: path.resolve(__dirname, 'dist')
 	},
 	externals: {
-		mainConfig: 'mainConfigOnWindows'
+		projectListConfig: 'coreProjectListConfig'
 	}
 };

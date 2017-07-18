@@ -1,4 +1,4 @@
-import {config} from 'mainConfig';
+import {config} from 'projectListConfig';
 // import 'mainConfig';
 
 export function getConfig() {

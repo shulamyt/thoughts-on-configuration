@@ -84,4 +84,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+example/dist/*
+
 

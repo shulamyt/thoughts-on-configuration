@@ -4,8 +4,8 @@
   "description": "",
   "main": "none",
   "scripts": {
-    "build": "webpack --bail",
-    "dev": "node webpack.dev.server.js"
+    "build": "webpack --bail --watch",
+    "dev": "node webpack.dev.server.js --watch"
   },
   "author": "",
   "license": "ISC",

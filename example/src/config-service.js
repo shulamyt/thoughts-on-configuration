@@ -1,4 +1,5 @@
-import {config} from './configuration/core.js';
+import {config} from 'mainConfig';
+// import 'mainConfig';
 
 export function getConfig() {
 	return config;

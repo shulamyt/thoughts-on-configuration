@@ -1,7 +1,3 @@
 export function getConfig() {
-	return new Promise(
-		function(resolve, reject) {
-			resolve(dopProjectsListConfiguration);
-		}
-	)
+	return "config is workig";
 }

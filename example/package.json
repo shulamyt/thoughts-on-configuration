@@ -4,11 +4,13 @@
   "description": "",
   "main": "none",
   "scripts": {
-    "build": "webpack --bail"
+    "build": "webpack --bail",
+    "dev": "node webpack.dev.server.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "webpack": "^3.3.0"
+    "webpack": "^3.3.0",
+    "webpack-dev-server": "^2.5.1"
   }
 }

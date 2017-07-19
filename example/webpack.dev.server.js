@@ -4,7 +4,7 @@ var config = require('./webpack.config.js');
 
 new WebpackDevServer(webpack(config), {
 		host: 'localhost',
-		port: '8080',
+var port = 8080;
 		https: false,
 		stats: 'verbose',
 		compress: true,
@@ -20,9 +20,9 @@ new WebpackDevServer(webpack(config), {
 		aggregateTimeout: 100,
 		ignored: /node_modules/
 		}
-	}).listen(8080, 'localhost', function (err, result) {
+	}).listen(port, 'localhost', function (err, result) {
 	if (err) {
 		console.log(err);
 	}
-	console.log('Dev server listening at localhost:' + 8080);
+	console.log('Dev server listening at localhost: ' + port);
 });

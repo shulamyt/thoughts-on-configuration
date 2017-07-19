@@ -10,7 +10,7 @@ we want to
 
 
 
-## config with webpack:
+## Config with webpack
 
 ### require()
 https://webpack.js.org/guides/dependency-management/
@@ -29,6 +29,8 @@ https://webpack.js.org/configuration/resolve/
 ### externals - as global var
 https://webpack.js.org/configuration/externals/
 
+
+## How to load config files
 
 
 

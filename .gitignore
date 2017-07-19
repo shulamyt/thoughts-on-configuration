@@ -85,5 +85,6 @@ $RECYCLE.BIN/
 *.lnk
 
 example/dist/*
+usingExternalsExample/dist/*
 
 

@@ -5,7 +5,7 @@
   "main": "none",
   "scripts": {
     "build": "webpack --bail --watch",
-    "dev": "node webpack.dev.server.js --watch"
+    "dev": "node webpack.dev.server.js"
   },
   "author": "",
   "license": "ISC",

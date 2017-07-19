@@ -17,8 +17,8 @@ new WebpackDevServer(webpack(config), {
 		inline: true,
 		overlay: false,
 		watchOptions: {
-		aggregateTimeout: 100,
-		ignored: /node_modules/
+			aggregateTimeout: 100,
+			ignored: /node_modules/
 		}
 	}).listen(port, 'localhost', function (err, result) {
 	if (err) {

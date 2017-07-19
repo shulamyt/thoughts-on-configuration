@@ -12,30 +12,21 @@ we want to
 
 ## config with webpack:
 
-* require()
-
+### require()
 https://webpack.js.org/guides/dependency-management/
 **no - it is still need to be in build time**
 
-
-* import()
-
+### import()
 ES proposal: import() – dynamically importing ES modules
 https://webpack.js.org/guides/migrating/#code-splitting-with-es2015
 http://2ality.com/2017/01/import-operator.html
-
 **no - it is still need to be in build time**
 
-
-* alias
-
+### alias
 https://webpack.js.org/configuration/resolve/
-
 **no - it is still need to be in build time**
 
-
-* externals - as global var
-
+### externals - as global var
 https://webpack.js.org/configuration/externals/
 
 

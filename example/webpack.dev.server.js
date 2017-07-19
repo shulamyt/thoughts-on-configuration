@@ -1,10 +1,10 @@
 var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var config = require('./webpack.config.js');
+var port = 8080;
 
 new WebpackDevServer(webpack(config), {
 		host: 'localhost',
-var port = 8080;
 		https: false,
 		stats: 'verbose',
 		compress: true,

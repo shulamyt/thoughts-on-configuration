@@ -53,14 +53,12 @@ function getMainAttribute(loaderScriptTag){
 
 function getConfigFileAttribute(loaderScriptTag){
 	return loaderScriptTag.getAttribute('data-loader-config-file');
-}
-
-getConfigFileAttribute
+};
 
 function getLoaderScriptTag(){
-	var scripts = scripts();
-	for (i = 0; i < scripts.length; i += 1) {
-		var script = scripts[i];
+	var allScripts = scripts();
+	for (i = 0; i < allScripts.length; i += 1) {
+		var script = allScripts[i];
 		if (script && getMainAttribute(script)) {
 			return script;
 		}
@@ -68,13 +66,13 @@ function getLoaderScriptTag(){
 };
 
 function loadAllConfigFiles(){
-	var scripts = scripts();
-	for (i = 0; i < scripts.length; i += 1) {
-		var script = scripts[i];
-		if (script && getMainAttribute(script)) {
-			return script;
-		}
+	var allFilesPromises = [];
+	for(var glodalName in appConfigSettings){
+		console.log(glodalName);
+		var path = appConfigSettings[glodalName];
+		allFilesPromises.push(requireScript(loaderMainFilePath));
 	}
+	return Promise.all(allFilesPromises);
 };
 
 var loaderScriptTag = getLoaderScriptTag();

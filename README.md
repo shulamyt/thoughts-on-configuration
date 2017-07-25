@@ -31,8 +31,10 @@ https://webpack.js.org/configuration/externals/
 
 
 ## How to load config files
+the only way to connect vars between script are via global vars.
 
-
+## How to build the configuration with webpack
+we assume that the configuration put gloabl var named as the configuration file name. How to buld the configuration with webpack so it will work like that?
 
 
 

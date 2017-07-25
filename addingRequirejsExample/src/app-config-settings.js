@@ -1,3 +1,3 @@
 var appConfigSettings = {
-	'projectListConfigOnWindow' : './configuration/core.js'
+	'projectListConfigOnWindow' : './configuration/projectListCoreConfiguration.js'
 };

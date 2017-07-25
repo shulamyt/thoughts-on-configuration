@@ -15,7 +15,7 @@ function requireScript(url) {
 	script.async = true;
 	script.timeout = 120000;
 
-	// if (__webpack_require__.nc) {
+	// if (nc) {
 	// 	script.setAttribute("nonce", __webpack_require__.nc);
 	// }
 	script.src = url;
@@ -65,12 +65,36 @@ function getLoaderScriptTag(){
 	}
 };
 
+function getFileName(filePath){
+	var fileName = filePath.split('\\').pop().split('/').pop();
+	return fileName;
+};
+
+function getCurrentGlobalName(filePath){
+	//we assume that the file name is the global param that it export
+	return getFileName(filePath);
+};
+
+
+function attachAsGlobal(globalName, filePath){
+	var currentGlobalName = getCurrentGlobalName(filePath);
+	if(window[globalName] != undefined){
+		console.error('The global name: ' + globalName + ' is allready defined. Pls change it.');
+	}
+	else{
+		window[globalName] = currentGlobalName;
+		window[currentGlobalName] = undefined;
+	}
+};
+
 function loadAllConfigFiles(){
 	var allFilesPromises = [];
-	for(var glodalName in appConfigSettings){
-		console.log(glodalName);
+	for(var globalName in appConfigSettings){
+		console.log(globalName);
 		var path = appConfigSettings[glodalName];
-		allFilesPromises.push(requireScript(loaderMainFilePath));
+		var requireScriptPromise = requireScript(loaderMainFilePath);
+		requireScriptPromise.then(attachAsGlobal(globalName, path));
+		allFilesPromises.push(requireScriptPromise);
 	}
 	return Promise.all(allFilesPromises);
 };

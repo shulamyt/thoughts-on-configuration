@@ -1,0 +1,1 @@
+var projectListCoreConfiguration = {'config': {"a":222222, "b": 666666}};

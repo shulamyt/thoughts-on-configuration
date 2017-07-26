@@ -67,6 +67,7 @@ function getLoaderScriptTag(){
 
 function getFileName(filePath){
 	var fileName = filePath.split('\\').pop().split('/').pop();
+	fileName = fileName.slice(0, -3); //remove .js
 	return fileName;
 };
 
@@ -80,20 +81,25 @@ function attachAsGlobal(globalName, filePath){
 	var currentGlobalName = getCurrentGlobalName(filePath);
 	if(window[globalName] != undefined){
 		console.error('The global name: ' + globalName + ' is allready defined. Pls change it.');
+		return;
 	}
-	else{
-		window[globalName] = currentGlobalName;
-		window[currentGlobalName] = undefined;
+	if(window[currentGlobalName] == undefined){
+		console.error('No config loaded in : ' + currentGlobalName);
+		return;
 	}
+	window[globalName] = window[currentGlobalName];
+	window[currentGlobalName] = undefined;
 };
 
 function loadAllConfigFiles(){
 	var allFilesPromises = [];
 	for(var globalName in appConfigSettings){
 		console.log(globalName);
-		var path = appConfigSettings[glodalName];
-		var requireScriptPromise = requireScript(loaderMainFilePath);
-		requireScriptPromise.then(attachAsGlobal(globalName, path));
+		var path = appConfigSettings[globalName];
+		var requireScriptPromise = requireScript(path);
+		requireScriptPromise.then(function(){
+			attachAsGlobal(globalName, path)
+		});
 		allFilesPromises.push(requireScriptPromise);
 	}
 	return Promise.all(allFilesPromises);

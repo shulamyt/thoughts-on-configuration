@@ -1,10 +1,17 @@
 function requireScript(url) {
+	if(window.loaderPromisesResolve == undefined){
+		window.loaderPromisesResolve = [];
+	}
 
-	var scriptIsLoadedResolve;
-	var scriptIsLoadedReject;
+	if(window.loaderPromisesReject == undefined){
+		window.loaderPromisesReject = [];
+	}
+
 	var scriptIsLoadedPromise = new Promise(function(resolve, reject) {
-		scriptIsLoadedResolve = resolve;
-		scriptIsLoadedReject = reject;
+		// scriptIsLoadedResolve = resolve;
+		// scriptIsLoadedReject = reject;
+		loaderPromisesResolve[url] = resolve;
+		loaderPromisesReject[url] = reject;
 	});
 
 	// start chunk loading
@@ -20,17 +27,17 @@ function requireScript(url) {
 	// }
 	script.src = url;
 	var timeout = setTimeout(onScriptComplete, 120000);
-	script.onerror = onScriptError;
-	script.onload = onScriptload
+	script.onerror = onScriptError.bind(this, url);
+	script.onload = onScriptload.bind(this, url);
 
-	function onScriptload() {
+	function onScriptload(scriptUrl, event) {
 		onScriptComplete();
-		scriptIsLoadedResolve();
+		loaderPromisesResolve[scriptUrl]();
 	}
 
-	function onScriptError() {
+	function onScriptError(scriptUrl, event) {
 		onScriptComplete();
-		scriptIsLoadedReject();
+		loaderPromisesReject[scriptUrl]();
 	}
 
 	function onScriptComplete() {
@@ -97,9 +104,7 @@ function loadAllConfigFiles(){
 		console.log(globalName);
 		var path = appConfigSettings[globalName];
 		var requireScriptPromise = requireScript(path);
-		requireScriptPromise.then(function(){
-			attachAsGlobal(globalName, path)
-		});
+		requireScriptPromise.then(attachAsGlobal.bind(this, globalName, path));
 		allFilesPromises.push(requireScriptPromise);
 	}
 	return Promise.all(allFilesPromises);

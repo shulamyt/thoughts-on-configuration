@@ -101,7 +101,6 @@ function attachAsGlobal(globalName, filePath){
 function loadAllConfigFiles(){
 	var allFilesPromises = [];
 	for(var globalName in appConfigSettings){
-		console.log(globalName);
 		var path = appConfigSettings[globalName];
 		var requireScriptPromise = requireScript(path);
 		requireScriptPromise.then(attachAsGlobal.bind(this, globalName, path));

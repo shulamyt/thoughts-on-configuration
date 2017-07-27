@@ -8,8 +8,6 @@ function requireScript(url) {
 	}
 
 	var scriptIsLoadedPromise = new Promise(function(resolve, reject) {
-		// scriptIsLoadedResolve = resolve;
-		// scriptIsLoadedReject = reject;
 		loaderPromisesResolve[url] = resolve;
 		loaderPromisesReject[url] = reject;
 	});
@@ -26,22 +24,23 @@ function requireScript(url) {
 	// 	script.setAttribute("nonce", __webpack_require__.nc);
 	// }
 	script.src = url;
-	var timeout = setTimeout(onScriptComplete, 120000);
-	script.onerror = onScriptError.bind(this, url);
-	script.onload = onScriptload.bind(this, url);
+	var timeout = setTimeout(onScriptError, 120000);
+	script.onerror = onScriptError.bind(null, url);
+	script.onload = onScriptload.bind(null, url);
 
 	function onScriptload(scriptUrl, event) {
-		onScriptComplete();
+		onScriptComplete(scriptUrl);
 		loaderPromisesResolve[scriptUrl]();
-	}
+	};
 
 	function onScriptError(scriptUrl, event) {
-		onScriptComplete();
+		onScriptComplete(scriptUrl);
 		loaderPromisesReject[scriptUrl]();
-	}
+	};
 
-	function onScriptComplete() {
+	function onScriptComplete(scriptUrl) {
 		// avoid mem leaks in IE.
+		window.loaderPromisesResolve[scriptUrl] = window.loaderPromisesReject[scriptUrl] = null;
 		script.onerror = script.onload = null;
 		clearTimeout(timeout);
 	};

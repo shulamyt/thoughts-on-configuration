@@ -7,4 +7,7 @@ var appConfigSettings = {
 		'./src/configuration/projectListLayer1Configuration.js',
 		'./src/configuration/projectListCoreConfiguration.js'
 	]
+	//,
+	//'taskListConfig' : './src/configuration/projectListCoreConfiguration.js'
+
 };

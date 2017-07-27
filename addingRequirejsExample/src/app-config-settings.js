@@ -1,8 +1,10 @@
-var appConfigSettings = {
-	'projectListConfigOnWindow' : './src/configuration/projectListCoreConfiguration.js'
-};
-
 // var appConfigSettings = {
-// 	'projectListConfigOnWindow' : './configuration/projectListLayer1Configuration.js',
-// 	'projectListLayer1ConfigurationBase' : './configuration/projectListCoreConfiguration.js'
+// 	'projectListConfigOnWindow' : './src/configuration/projectListCoreConfiguration.js'
 // };
+
+var appConfigSettings = {
+	'projectListConfigOnWindow' : [
+		'./src/configuration/projectListLayer1Configuration.js',
+		'./src/configuration/projectListCoreConfiguration.js'
+	]
+};

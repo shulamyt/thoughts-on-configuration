@@ -78,14 +78,14 @@ function getFileName(filePath){
 	return fileName;
 };
 
-function getCurrentGlobalName(filePath){
+function getGlobalName(filePath){
 	//we assume that the file name is the global param that it export
 	return getFileName(filePath);
 };
 
 
 function attachAsGlobal(globalName, filePath){
-	var currentGlobalName = getCurrentGlobalName(filePath);
+	var currentGlobalName = getGlobalName(filePath);
 	if(window[globalName] != undefined){
 		console.error('The global name: ' + globalName + ' is allready defined. Pls change it.');
 		return;
@@ -98,23 +98,61 @@ function attachAsGlobal(globalName, filePath){
 	window[currentGlobalName] = undefined;
 };
 
+function cleanGlobal(globalName){
+	window[globalName] = undefined;
+	delete window[globalName];
+};
+
+function requireScripts(pathsList){
+	var requireScriptsPromises = [];
+	var scriptsList = [];
+	for(var i = 0; i < pathsList.length; i++){
+		var path = pathsList[i];
+		var requireScriptPromise = requireScript(path);
+		requireScriptsPromises.push(requireScriptPromise);
+		var addScriptToList = function(url, index){
+			var globalName = getGlobalName(url);
+			scriptsList[index] = window[globalName];
+			cleanGlobal(globalName);
+		};
+		requireScriptPromise.then(addScriptToList.bind(null, path, i));
+	}
+
+	var requireScriptsPromise = new Promise(function(resolve, reject) {
+		Promise.all(requireScriptsPromises).then(function(){
+			resolve(scriptsList);
+		});
+	});
+	return requireScriptsPromise;
+};
+
 function loadAllConfigFiles(){
 	var allFilesPromises = [];
 	for(var globalName in appConfigSettings){
-		var path = appConfigSettings[globalName];
-		var requireScriptPromise = requireScript(path);
-		requireScriptPromise.then(attachAsGlobal.bind(this, globalName, path));
-		allFilesPromises.push(requireScriptPromise);
+		if(Array.isArray(appConfigSettings[globalName])){
+			var pathsList = appConfigSettings[globalName];
+			var requireScriptsPromise = requireScripts(pathsList)
+			requireScriptsPromise.then(function(scriptsList){
+				window[globalName] = scriptsList;
+			});
+			allFilesPromises.push(requireScriptsPromise);
+		}
+		else{
+			var path = appConfigSettings[globalName];
+			var requireScriptPromise = requireScript(path);
+			requireScriptPromise.then(attachAsGlobal.bind(this, globalName, path));
+			allFilesPromises.push(requireScriptPromise);
+		}
 	}
 	return Promise.all(allFilesPromises);
 };
 
 var loaderScriptTag = getLoaderScriptTag();
-var loaderMainFilePath = getMainAttribute(loaderScriptTag);
-var loaderConfigFilePath = getConfigFileAttribute(loaderScriptTag);
+var mainAppFilePath = getMainAttribute(loaderScriptTag);
+var configFilePath  = getConfigFileAttribute(loaderScriptTag);
 
-requireScript(loaderConfigFilePath).then(function(){
+requireScript(configFilePath).then(function(){
 	loadAllConfigFiles().then(function(){
-		requireScript(loaderMainFilePath);
+		requireScript(mainAppFilePath);
 	});
 });

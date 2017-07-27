@@ -1,4 +1,4 @@
-function requireScript(url) {
+function downloadScript(url) {
 	var scriptIsLoadedPromise = new Promise(function(resolve, reject) {
 		// start chunk loading
 		var head = document.getElementsByTagName('head')[0];
@@ -14,9 +14,9 @@ function requireScript(url) {
 		script.src = url;
 		var timeout = setTimeout(onScriptError, 120000);
 		script.onerror = onScriptError.bind(null, url);
-		script.onload = onScriptload.bind(null, url);
+		script.onload = onScriptLoad.bind(null, url);
 
-		function onScriptload(scriptUrl, event) {
+		function onScriptLoad(scriptUrl, event) {
 			onScriptComplete(scriptUrl);
 			resolve();
 		};
@@ -45,8 +45,8 @@ function getMainAttribute(loaderScriptTag){
 	return loaderScriptTag.getAttribute('data-loader-main');
 };
 
-function getConfigFileAttribute(loaderScriptTag){
-	return loaderScriptTag.getAttribute('data-loader-config-file');
+function getManifestAttribute(loaderScriptTag){
+	return loaderScriptTag.getAttribute('data-loader-manifest');
 };
 
 function getLoaderScriptTag(){
@@ -90,27 +90,25 @@ function cleanGlobal(globalName){
 	delete window[globalName];
 };
 
-function requireScripts(pathsList){
-	var requireScriptsPromises = [];
+function downloadScripts(pathsList){
+	var downloadScriptsPromises = [];
 	var scriptsList = [];
-	for(var i = 0; i < pathsList.length; i++){
-		var path = pathsList[i];
-		var requireScriptPromise = requireScript(path);
-		requireScriptsPromises.push(requireScriptPromise);
+	pathsList.forEach(function(path, i){
+		var downloadScriptPromise = downloadScript(path);
+		downloadScriptsPromises.push(downloadScriptPromise);
 		var addScriptToList = function(url, index){
 			var globalName = getGlobalName(url);
 			scriptsList[index] = window[globalName];
 			cleanGlobal(globalName);
-		};
-		requireScriptPromise.then(addScriptToList.bind(null, path, i));
-	}
-
-	var requireScriptsPromise = new Promise(function(resolve, reject) {
-		Promise.all(requireScriptsPromises).then(function(){
+		}.bind(null, path, i);
+		downloadScriptPromise.then(addScriptToList);
+	});
+	var downloadScriptsPromise = new Promise(function(resolve, reject) {
+		Promise.all(downloadScriptsPromises).then(function(){
 			resolve(scriptsList);
 		});
 	});
-	return requireScriptsPromise;
+	return downloadScriptsPromise;
 };
 
 function loadAllConfigFiles(){
@@ -118,28 +116,28 @@ function loadAllConfigFiles(){
 	for(var globalName in appConfigSettings){
 		if(Array.isArray(appConfigSettings[globalName])){
 			var pathsList = appConfigSettings[globalName];
-			var requireScriptsPromise = requireScripts(pathsList)
-			requireScriptsPromise.then(function(scriptsList){
+			var downloadScriptsPromise = downloadScripts(pathsList)
+			downloadScriptsPromise.then(function(scriptsList){
 				window[globalName] = scriptsList;
 			});
-			allFilesPromises.push(requireScriptsPromise);
+			allFilesPromises.push(downloadScriptsPromise);
 		}
 		else{
 			var path = appConfigSettings[globalName];
-			var requireScriptPromise = requireScript(path);
-			requireScriptPromise.then(attachAsGlobal.bind(this, globalName, path));
-			allFilesPromises.push(requireScriptPromise);
+			var downloadScriptPromise = downloadScript(path);
+			downloadScriptPromise.then(attachAsGlobal.bind(this, globalName, path));
+			allFilesPromises.push(downloadScriptPromise);
 		}
 	}
 	return Promise.all(allFilesPromises);
 };
 
 var loaderScriptTag = getLoaderScriptTag();
-var mainAppFilePath = getMainAttribute(loaderScriptTag);
-var configFilePath  = getConfigFileAttribute(loaderScriptTag);
+var mainApp = getMainAttribute(loaderScriptTag);
+var manifest = getManifestAttribute(loaderScriptTag);
 
-requireScript(configFilePath).then(function(){
+downloadScript(manifest).then(function(){
 	loadAllConfigFiles().then(function(){
-		requireScript(mainAppFilePath);
+		downloadScript(mainApp);
 	});
 });

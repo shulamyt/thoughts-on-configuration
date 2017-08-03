@@ -1,4 +1,4 @@
-function Loader(){
+var Loader = function(){
 	this.downloadScript = function (url) {
 		var scriptIsLoadedPromise = new Promise(function(resolve, reject) {
 			// start chunk loading
@@ -150,5 +150,3 @@ if(loaderScriptTag != undefined){
 	var manifest = loader.getManifestAttribute(loaderScriptTag);
 	loader.load(manifest, mainApp);
 }
-
-

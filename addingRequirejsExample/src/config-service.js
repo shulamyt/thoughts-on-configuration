@@ -1,4 +1,4 @@
-import * as projectListConfigs from 'projectListConfig';
+import projectListConfigs from 'projectListConfig';
 
 export function getConfig() {
 	console.log(projectListConfigs);

@@ -134,13 +134,19 @@ var Loader = function(){
 	};
 
 	this.load = function (manifest, mainApp) {
-		this.downloadScript(manifest).then(function(){
-			this.loadAllConfigFiles().then(function(){
-				this.downloadScript(mainApp);
+		return new Promise(function(laodResolve, laodReject) {
+			this.downloadScript(manifest).then(function(){
+				this.loadAllConfigFiles().then(function(){
+					if(mainApp != undefined){
+						this.downloadScript(mainApp).then(laodResolve);
+					}
+					else{
+						laodResolve();
+					}
+				}.bind(this));
 			}.bind(this));
 		}.bind(this));
 	};
-
 }
 
 var loader = new Loader();
@@ -148,5 +154,5 @@ var loaderScriptTag = loader.getLoaderScriptTag();
 if(loaderScriptTag != undefined){
 	var mainApp = loader.getMainAttribute(loaderScriptTag);
 	var manifest = loader.getManifestAttribute(loaderScriptTag);
-	loader.load(manifest, mainApp);
+	loader.load(manifest, mainApp).then(function(){console.log('app loaded!')});
 }

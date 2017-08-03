@@ -126,7 +126,7 @@ var Loader = function(){
 			else{
 				var path = configFilesSettings[globalName];
 				var downloadScriptPromise = this.downloadScript(path);
-				downloadScriptPromise.then(attachAsGlobal.bind(this, globalName, path));
+				downloadScriptPromise.then(this.attachAsGlobal.bind(this, globalName, path));
 				allFilesPromises.push(downloadScriptPromise);
 			}
 		}

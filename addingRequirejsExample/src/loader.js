@@ -112,11 +112,11 @@ var Loader = function(){
 		return downloadScriptsPromise;
 	};
 
-	this.loadAllConfigFiles = function () {
+	this.loadAllConfigFiles = function (configFilesSettings) {
 		var allFilesPromises = [];
-		for(var globalName in appConfigSettings){
-			if(Array.isArray(appConfigSettings[globalName])){
-				var pathsList = appConfigSettings[globalName];
+		for(var globalName in configFilesSettings){
+			if(Array.isArray(configFilesSettings[globalName])){
+				var pathsList = configFilesSettings[globalName];
 				var downloadScriptsPromise = this.downloadScripts(pathsList)
 				downloadScriptsPromise.then(function(scriptsList){
 					window[globalName] = scriptsList;
@@ -124,7 +124,7 @@ var Loader = function(){
 				allFilesPromises.push(downloadScriptsPromise);
 			}
 			else{
-				var path = appConfigSettings[globalName];
+				var path = configFilesSettings[globalName];
 				var downloadScriptPromise = this.downloadScript(path);
 				downloadScriptPromise.then(attachAsGlobal.bind(this, globalName, path));
 				allFilesPromises.push(downloadScriptPromise);
@@ -133,12 +133,18 @@ var Loader = function(){
 		return Promise.all(allFilesPromises);
 	};
 
-	this.load = function (manifest, mainApp) {
+	this.getConfigFilesSettings = function (manifestPath) {
+		var name = this.getGlobalName(manifestPath);
+		return window[name];
+	};	
+
+	this.load = function (manifestPath, mainAppPath) {
 		return new Promise(function(laodResolve, laodReject) {
-			this.downloadScript(manifest).then(function(){
-				this.loadAllConfigFiles().then(function(){
-					if(mainApp != undefined){
-						this.downloadScript(mainApp).then(laodResolve);
+			this.downloadScript(manifestPath).then(function(){
+				var configFilesSettings = this.getConfigFilesSettings(manifestPath);
+				this.loadAllConfigFiles(configFilesSettings).then(function(){
+					if(mainAppPath != undefined){
+						this.downloadScript(mainAppPath).then(laodResolve);
 					}
 					else{
 						laodResolve();
@@ -152,7 +158,7 @@ var Loader = function(){
 var loader = new Loader();
 var loaderScriptTag = loader.getLoaderScriptTag();
 if(loaderScriptTag != undefined){
-	var mainApp = loader.getMainAttribute(loaderScriptTag);
-	var manifest = loader.getManifestAttribute(loaderScriptTag);
-	loader.load(manifest, mainApp).then(function(){console.log('app loaded!')});
+	var mainAppPath = loader.getMainAttribute(loaderScriptTag);
+	var manifestPath = loader.getManifestAttribute(loaderScriptTag);
+	loader.load(manifestPath, mainAppPath).then(function(){console.log('app loaded!')});
 }

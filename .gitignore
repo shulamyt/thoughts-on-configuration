@@ -85,7 +85,7 @@ $RECYCLE.BIN/
 *.lnk
 
 example/dist/*
-usingExternalsExample/dist/*
+usingLoaderInHtmlAndExternals/dist/*
 addingRequirejsExample/dist/*
 
 

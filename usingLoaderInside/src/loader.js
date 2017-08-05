@@ -1,4 +1,4 @@
-var Loader = function(){
+export function Loader(){
 	this.downloadScript = function (url) {
 		var scriptIsLoadedPromise = new Promise(function(resolve, reject) {
 			// start chunk loading
@@ -91,29 +91,25 @@ var Loader = function(){
 	};
 
 	this.loadAllConfigFiles = function (configFilesSettings) {
-		return new Promise(function(resolve, reject) {
-			var allFilesPromises = [];
-			var mainGlobalName;
-			for(var globalName in configFilesSettings){
-				if(Array.isArray(configFilesSettings[globalName])){
-					var pathsList = configFilesSettings[globalName];
-					var downloadScriptsPromise = this.downloadScripts(pathsList)
-					downloadScriptsPromise.then(function(scriptsList){
-						window['dop'][globalName] = scriptsList;
-					});
-					allFilesPromises.push(downloadScriptsPromise);
-				}
-				else{
-					var path = configFilesSettings[globalName];
-					var downloadScriptPromise = this.downloadScript(path);
-					downloadScriptPromise.then(this.attachAsGlobal.bind(this, globalName, path));
-					allFilesPromises.push(downloadScriptPromise);
-				}
+		var allFilesPromises = [];
+		var mainGlobalName;
+		for(var globalName in configFilesSettings){
+			if(Array.isArray(configFilesSettings[globalName])){
+				var pathsList = configFilesSettings[globalName];
+				var downloadScriptsPromise = this.downloadScripts(pathsList)
+				downloadScriptsPromise.then(function(scriptsList){
+					window['dop'][globalName] = scriptsList;
+				});
+				allFilesPromises.push(downloadScriptsPromise);
 			}
-			Promise.all(allFilesPromises).then(function(){
-				
-			});
-		});	
+			else{
+				var path = configFilesSettings[globalName];
+				var downloadScriptPromise = this.downloadScript(path);
+				downloadScriptPromise.then(this.attachAsGlobal.bind(this, globalName, path));
+				allFilesPromises.push(downloadScriptPromise);
+			}
+		}
+		return Promise.all(allFilesPromises);
 	};
 
 	this.getConfigFilesSettings = function (manifestPath) {

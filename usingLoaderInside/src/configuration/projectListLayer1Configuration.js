@@ -1,1 +1,1 @@
-var projectListLayer1Configuration = {'config': {"c":333333}};
+dop.projectListLayer1Configuration = {'config': {"c":333333}};

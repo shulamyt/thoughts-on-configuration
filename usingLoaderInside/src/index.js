@@ -1,3 +1,9 @@
 import * as ConfigService from './config-service.js';
 
-console.log(ConfigService.getConfig());
+ConfigService.getConfig().then(function(config){
+	console.log(config);
+});
+
+// .then(fucntion(config){
+// 	// console.log(config);
+// });

@@ -46,7 +46,7 @@ export function Loader(){
 			downloadScriptsPromises.push(downloadScriptPromise);
 			var addScriptToList = function(url, index){
 				var globalName = this.getGlobalName(url);
-				scriptsList[index] = window[globalName];
+				scriptsList[index] = this.getGlobalRoot()[globalName];
 				this.cleanGlobal(globalName);
 			}.bind(this, path, i);
 			downloadScriptPromise.then(addScriptToList);
@@ -70,10 +70,17 @@ export function Loader(){
 		return this.getFileName(filePath);
 	};
 
+	this.getGlobalRoot = function(){
+		return window['dop'];
+	};
+
+	this.initGlobalRoot = function(){
+		window['dop'] = {};
+	};
 
 	this.attachAsGlobal = function (globalName, filePath) {
 		var currentGlobalName = this.getGlobalName(filePath);
-		if(window['dop'][globalName] != undefined){
+		if(this.getGlobalRoot()[globalName] != undefined){
 			console.error('The global name: ' + globalName + ' is allready defined. Pls change it.');
 			return;
 		}
@@ -81,13 +88,13 @@ export function Loader(){
 			console.error('No config loaded in : ' + currentGlobalName);
 			return;
 		}
-		window['dop'][globalName] = window[currentGlobalName];
-		window[currentGlobalName] = undefined;
+		this.getGlobalRoot()[globalName] = this.getGlobalRoot()[currentGlobalName];
+		this.getGlobalRoot()[currentGlobalName] = undefined;
 	};
 
 	this.cleanGlobal = function (globalName) {
-		window[globalName] = undefined;
-		delete window[globalName];
+		this.getGlobalRoot()[globalName] = undefined;
+		delete this.getGlobalRoot()[globalName];
 	};
 
 	this.loadAllConfigFiles = function (configFilesSettings) {
@@ -98,8 +105,8 @@ export function Loader(){
 				var pathsList = configFilesSettings[globalName];
 				var downloadScriptsPromise = this.downloadScripts(pathsList)
 				downloadScriptsPromise.then(function(scriptsList){
-					window['dop'][globalName] = scriptsList;
-				});
+					this.getGlobalRoot()[globalName] = scriptsList;
+				}.bind(this));
 				allFilesPromises.push(downloadScriptsPromise);
 			}
 			else{
@@ -118,22 +125,23 @@ export function Loader(){
 	};	
 
 	this.load = function (manifestPath, relevantNamespace) {
-		if(window['dop'] == undefined){
-			window['dop'] = {};
+		if(this.getGlobalRoot() == undefined){
+			this.initGlobalRoot();
 		}
 		return new Promise(function(loadResolve, loadReject) {
 			this.downloadScript(manifestPath).then(function(){
 				var configFilesSettings = this.getConfigFilesSettings(manifestPath);
-				this.loadAllConfigFiles(configFilesSettings).then(function(){
+				var foo = this.loadAllConfigFiles.bind(this);
+				foo(configFilesSettings).then(function(){
 					var resovedConfig;
 					if(relevantNamespace){
-						resovedConfig = window['dop'][relevantNamespace];
+						resovedConfig = this.getGlobalRoot()[relevantNamespace];
 					}
 					else{
-						resovedConfig = window['dop'];
+						resovedConfig = this.getGlobalRoot();
 					}
 					loadResolve(resovedConfig);
-				});
+				}.bind(this));
 			}.bind(this));
 		}.bind(this));
 	};

@@ -1,1 +1,1 @@
-var projectListCoreConfiguration = {'config': {"a":222222, "b": 666666}};
+dop.projectListCoreConfiguration = {'config': {"a":222222, "b": 666666}};

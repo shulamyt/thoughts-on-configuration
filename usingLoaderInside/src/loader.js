@@ -1,4 +1,4 @@
-export function Loader(){
+export default function Loader(){
 	this.downloadScript = function (url) {
 		var scriptIsLoadedPromise = new Promise(function(resolve, reject) {
 			// start chunk loading
@@ -121,7 +121,7 @@ export function Loader(){
 
 	this.getConfigFilesSettings = function (manifestPath) {
 		var name = this.getGlobalName(manifestPath);
-		return window[name];
+		return this.getGlobalRoot()[name];
 	};	
 
 	this.load = function (manifestPath, relevantNamespace) {
@@ -131,16 +131,15 @@ export function Loader(){
 		return new Promise(function(loadResolve, loadReject) {
 			this.downloadScript(manifestPath).then(function(){
 				var configFilesSettings = this.getConfigFilesSettings(manifestPath);
-				var foo = this.loadAllConfigFiles.bind(this);
-				foo(configFilesSettings).then(function(){
-					var resovedConfig;
+				this.loadAllConfigFiles(configFilesSettings).then(function(){
+					var resolvedConfig;
 					if(relevantNamespace){
-						resovedConfig = this.getGlobalRoot()[relevantNamespace];
+						resolvedConfig = this.getGlobalRoot()[relevantNamespace];
 					}
 					else{
-						resovedConfig = this.getGlobalRoot();
+						resolvedConfig = this.getGlobalRoot();
 					}
-					loadResolve(resovedConfig);
+					loadResolve(resolvedConfig);
 				}.bind(this));
 			}.bind(this));
 		}.bind(this));

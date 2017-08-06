@@ -1,7 +1,7 @@
-import * as shula from './loader';
+import Loader from './loader';
 
 export function getConfig() {
-	var loader = new shula.Loader();
+	var loader = new Loader();
 	return new Promise(function(resolve, reject) {
 		loader.load('./src/appConfigSettings.js', 'projectListConfigurations').then(function(projectListConfigs){
 			console.log(projectListConfigs);
